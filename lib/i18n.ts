@@ -26,7 +26,7 @@ export function getLocaleFromCountry(countryCode: string): Locale {
   return countryToLocale[countryCode] || 'en'
 }
 
-export const translations: Record<Locale, Record<string, string>> = {
+export const translations: Record<Locale, Record<string, any>> = {
   ja: {
     title: '世界平和クリッカー',
     subtitle: 'みんなで協力して世界平和を実現しよう',
