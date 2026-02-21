@@ -12,11 +12,12 @@ interface HeartButtonProps {
 // 195個の「ありがとう」を赤枠範囲内に不規則配置（固定パターン）
 function generateThankYouPositions() {
   const positions: Array<{ text: string; x: number; y: number }> = []
-  const gridCols = 15  // 横15個
-  const gridRows = 13  // 縦13個 = 195個
-  const xRange = { min: -550, max: 550 }  // 横範囲
-  const yRange = { min: -50, max: 280 }  // 縦範囲（上部の総クリック数エリアを避ける）
+  const gridCols = 13  // 横13個
+  const gridRows = 15  // 縦15個 = 195個
+  const xRange = { min: -450, max: 450 }  // 横範囲（スマホ対応で狭める）
+  const yRange = { min: 80, max: 350 }  // 縦範囲（上部の総クリック数・進捗エリアを避ける）
   const heartRadius = 150  // ハートボタンを避ける半径
+  const minDistance = 60  // 吹き出し同士の最小距離
   
   const xStep = (xRange.max - xRange.min) / (gridCols + 1)
   const yStep = (yRange.max - yRange.min) / (gridRows + 1)
@@ -31,9 +32,9 @@ function generateThankYouPositions() {
       const baseX = xRange.min + (col + 1) * xStep
       const baseY = yRange.min + (row + 1) * yStep
       
-      // ランダムオフセット（±15px）
-      const offsetX = (Math.random() - 0.5) * 30
-      const offsetY = (Math.random() - 0.5) * 30
+      // ランダムオフセット（±10px）小さくして重なりを防ぐ
+      const offsetX = (Math.random() - 0.5) * 20
+      const offsetY = (Math.random() - 0.5) * 20
       
       const x = baseX + offsetX
       const y = baseY + offsetY
@@ -75,7 +76,7 @@ export function HeartButton({ onClick, locale }: HeartButtonProps) {
       {thankYouPositions.map((pos, i) => (
         <div
           key={i}
-          className="bg-white/85 px-2 py-1 rounded-full shadow-md text-xs font-medium text-gray-600 whitespace-nowrap"
+          className="bg-white/80 px-1.5 py-0.5 rounded-full shadow-sm text-[10px] font-medium text-gray-600 whitespace-nowrap"
           style={{
             position: 'absolute',
             left: '50%',

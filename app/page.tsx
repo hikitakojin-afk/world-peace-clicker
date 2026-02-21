@@ -127,8 +127,8 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
+    <main className="min-h-screen p-4 md:p-8 overflow-x-hidden">
+      <div className="max-w-7xl mx-auto overflow-x-hidden">
         {/* タイトル */}
         <div className="text-center mb-8">
           <h1 className="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 mb-4">

@@ -15,10 +15,15 @@
 }
 
 @layer base {
+  html {
+    overflow-x: hidden;
+  }
+  
   body {
     min-height: 100vh;
     color: #1a1a1a;
     background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)),
                 url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80') center/cover fixed;
+    overflow-x: hidden;
   }
 }
