@@ -6,6 +6,7 @@ import { CountDisplay } from '@/components/CountDisplay'
 import { StatsDisplay } from '@/components/StatsDisplay'
 import { UserInputModal } from '@/components/UserInputModal'
 import { Footer } from '@/components/Footer'
+import { ClickChart } from '@/components/ClickChart'
 import { supabase } from '@/lib/supabase-client'
 import { UserProfile, GlobalStats, ClickResponse } from '@/types'
 import { translations, getLocaleFromCountry, Locale } from '@/lib/i18n'
@@ -16,6 +17,8 @@ export default function Home() {
   const [isClicking, setIsClicking] = useState(false)
   const [locale, setLocale] = useState<Locale>('en')
   const [mounted, setMounted] = useState(false)
+  const [hasClicked, setHasClicked] = useState(false)
+  const [showThankYou, setShowThankYou] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -31,6 +34,12 @@ export default function Home() {
         console.error('Failed to parse profile:', err)
         localStorage.removeItem('userProfile')
       }
+    }
+
+    // クリック済みフラグをチェック
+    const clickedFlag = localStorage.getItem('hasClicked')
+    if (clickedFlag === 'true') {
+      setHasClicked(true)
     }
 
     // 統計データ取得
@@ -81,7 +90,7 @@ export default function Home() {
   }
 
   const handleClick = async () => {
-    if (!userProfile) return
+    if (!userProfile || hasClicked) return
 
     try {
       const res = await fetch('/api/click', {
@@ -97,6 +106,14 @@ export default function Home() {
       const data: ClickResponse = await res.json()
 
       if (data.success && data.data) {
+        // クリック成功：フラグを保存
+        localStorage.setItem('hasClicked', 'true')
+        setHasClicked(true)
+        setShowThankYou(true)
+        
+        // 5秒後に感謝メッセージを非表示
+        setTimeout(() => setShowThankYou(false), 5000)
+        
         // ローカルで即座に更新（楽観的UI）
         if (stats) {
           setStats({
@@ -156,23 +173,43 @@ export default function Home() {
           />
         )}
 
+        {/* 感謝メッセージ */}
+        {showThankYou && (
+          <div className="bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-white text-center py-6 px-4 rounded-2xl mb-8 shadow-2xl animate-pulse">
+            <p className="text-2xl md:text-3xl font-bold">{t.thankYouMessage}</p>
+          </div>
+        )}
+
+        {/* クリック済みメッセージ */}
+        {hasClicked && !showThankYou && (
+          <div className="bg-blue-100 text-blue-800 text-center py-4 px-4 rounded-xl mb-8">
+            <p className="text-lg md:text-xl font-medium">{t.alreadyClicked}</p>
+          </div>
+        )}
+
         {/* ハートボタン */}
         <div className="flex justify-center mb-12">
           <HeartButton 
             onClick={handleClick} 
             locale={locale}
+            disabled={hasClicked || (stats?.isCleared ?? false)}
           />
         </div>
 
         {/* 統計表示 */}
         {stats && (
-          <StatsDisplay
-            countries={stats.countries}
-            ageGroups={stats.ageGroups}
-            countryLabel={t.countryStats}
-            ageLabel={t.ageStats}
-            locale={locale}
-          />
+          <>
+            <StatsDisplay
+              countries={stats.countries}
+              ageGroups={stats.ageGroups}
+              countryLabel={t.countryStats}
+              ageLabel={t.ageStats}
+              locale={locale}
+            />
+            
+            {/* クリック数推移チャート */}
+            <ClickChart locale={locale} currentTotal={stats.totalClicks} />
+          </>
         )}
 
         {/* Footer */}

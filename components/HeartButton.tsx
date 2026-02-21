@@ -7,6 +7,7 @@ import { thankYouTexts } from '@/lib/thank-you-messages'
 interface HeartButtonProps {
   onClick: () => Promise<void>
   locale: string
+  disabled?: boolean
 }
 
 // 196個の「ありがとう」をハートボタンの両サイドに配置
@@ -49,7 +50,7 @@ function generateThankYouPositions() {
 // コンポーネント外で一度だけ生成（固定パターン）
 const thankYouPositions = generateThankYouPositions()
 
-export function HeartButton({ onClick, locale }: HeartButtonProps) {
+export function HeartButton({ onClick, locale, disabled = false }: HeartButtonProps) {
   const [isGlowing, setIsGlowing] = useState(false)
   const [bubbleStates, setBubbleStates] = useState<Array<{ isPink: boolean; isShaking: boolean }>>(
     thankYouPositions.map(() => ({ isPink: false, isShaking: false }))
@@ -103,6 +104,7 @@ export function HeartButton({ onClick, locale }: HeartButtonProps) {
   }
 
   const handleClick = async () => {
+    if (disabled) return
     setIsGlowing(true)
     playClickSound()
     await onClick()
@@ -181,15 +183,17 @@ export function HeartButton({ onClick, locale }: HeartButtonProps) {
       {/* ハートボタン */}
       <button
         onClick={handleClick}
+        disabled={disabled}
         className={`
           relative w-48 h-48 md:w-64 md:h-64 
           rounded-full 
-          bg-gradient-to-br from-pink-400 via-red-400 to-pink-500
-          hover:from-pink-500 hover:via-red-500 hover:to-pink-600
-          shadow-2xl hover:shadow-pink-500/50
+          shadow-2xl
           transition-all duration-200
-          active:scale-95
-          ${isGlowing ? 'shadow-pink-400/80 shadow-[0_0_40px_10px_rgba(251,113,133,0.6)]' : ''}
+          ${disabled 
+            ? 'bg-gray-400 cursor-not-allowed opacity-50' 
+            : 'bg-gradient-to-br from-pink-400 via-red-400 to-pink-500 hover:from-pink-500 hover:via-red-500 hover:to-pink-600 hover:shadow-pink-500/50 active:scale-95'
+          }
+          ${isGlowing && !disabled ? 'shadow-pink-400/80 shadow-[0_0_40px_10px_rgba(251,113,133,0.6)]' : ''}
         `}
       >
         <Heart 

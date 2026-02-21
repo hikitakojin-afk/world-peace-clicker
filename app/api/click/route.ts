@@ -27,6 +27,17 @@ export async function POST(request: NextRequest) {
 
     if (!currentData) throw new Error('Failed to fetch global count')
 
+    // 目標達成判定（達成済みの場合はクリックを受け付けない）
+    if (BigInt(currentData.total_clicks) >= BigInt(currentData.clear_threshold)) {
+      return NextResponse.json({
+        success: false,
+        error: {
+          code: 'GOAL_REACHED',
+          message: 'Goal already reached'
+        }
+      } as ClickResponse, { status: 403 })
+    }
+
     // カウント更新
     const newCount = BigInt(currentData.total_clicks) + BigInt(1)
     const { data: globalData, error: globalError } = await supabaseAdmin
