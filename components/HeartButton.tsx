@@ -1,7 +1,7 @@
 'use client'
 
 import { Heart } from 'lucide-react'
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { thankYouTexts } from '@/lib/thank-you-messages'
 
 interface HeartButtonProps {
@@ -62,22 +62,6 @@ const thankYouPositions = generateThankYouPositions()
 
 export function HeartButton({ onClick, locale }: HeartButtonProps) {
   const [isGlowing, setIsGlowing] = useState(false)
-  
-  const thankYouMessages = useMemo(() => 
-    thankYouPositions.map(({ text, x, y }) => ({
-      text,
-      style: {
-        position: 'absolute' as const,
-        left: '50%',
-        top: '50%',
-        transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
-      }
-    })),
-    []
-  )
-
-export function HeartButton({ onClick, locale }: HeartButtonProps) {
-  const [isGlowing, setIsGlowing] = useState(false)
 
   const handleClick = async () => {
     setIsGlowing(true)
@@ -88,13 +72,18 @@ export function HeartButton({ onClick, locale }: HeartButtonProps) {
   return (
     <div className="relative">
       {/* 「ありがとう」吹き出し */}
-      {thankYouMessages.map((msg, i) => (
+      {thankYouPositions.map((pos, i) => (
         <div
           key={i}
           className="bg-white/85 px-2 py-1 rounded-full shadow-md text-xs font-medium text-gray-600 whitespace-nowrap"
-          style={msg.style}
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: '50%',
+            transform: `translate(calc(-50% + ${pos.x}px), calc(-50% + ${pos.y}px))`,
+          }}
         >
-          {msg.text}
+          {pos.text}
         </div>
       ))}
 
