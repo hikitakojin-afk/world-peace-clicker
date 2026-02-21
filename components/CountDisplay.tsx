@@ -14,7 +14,7 @@ export function CountDisplay({ count, threshold, label, isCleared }: CountDispla
   }
 
   // 進捗率計算
-  const progress = (BigInt(count) * 100n) / BigInt(threshold)
+  const progress = (BigInt(count) * BigInt(100)) / BigInt(threshold)
 
   return (
     <div className="text-center mb-8">

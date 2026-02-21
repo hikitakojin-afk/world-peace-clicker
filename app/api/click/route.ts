@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     if (!currentData) throw new Error('Failed to fetch global count')
 
     // カウント更新
-    const newCount = BigInt(currentData.total_clicks) + 1n
+    const newCount = BigInt(currentData.total_clicks) + BigInt(1)
     const { data: globalData, error: globalError } = await supabaseAdmin
       .from('global_count')
       .update({ 

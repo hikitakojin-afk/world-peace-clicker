@@ -26,7 +26,7 @@ export async function GET() {
     const totalClicks = BigInt(globalData.total_clicks)
     
     // 統計から総クリック数を計算
-    const countryTotalClicks = allCountryData.reduce((sum, c) => sum + BigInt(c.clicks), 0n)
+    const countryTotalClicks = allCountryData.reduce((sum, c) => sum + BigInt(c.clicks), BigInt(0))
     
     const topCountries = allCountryData.slice(0, TOP_COUNTRIES_COUNT)
     const otherCountries = allCountryData.slice(TOP_COUNTRIES_COUNT)
@@ -35,16 +35,16 @@ export async function GET() {
       code: c.country_code,
       name: c.country_name,
       clicks: c.clicks.toString(),
-      percentage: countryTotalClicks > 0n ? Number((BigInt(c.clicks) * 10000n) / countryTotalClicks) / 100 : 0
+      percentage: countryTotalClicks > BigInt(0) ? Number((BigInt(c.clicks) * BigInt(10000)) / countryTotalClicks) / 100 : 0
     }))
 
     if (otherCountries.length > 0) {
-      const otherClicks = otherCountries.reduce((sum, c) => sum + BigInt(c.clicks), 0n)
+      const otherClicks = otherCountries.reduce((sum, c) => sum + BigInt(c.clicks), BigInt(0))
       countries.push({
         code: 'OTHER',
         name: { en: 'Other', ja: 'その他', zh: '其他', ko: '기타', es: 'Otros', fr: 'Autres', de: 'Andere', pt: 'Outros', ru: 'Прочие', ar: 'آخرون' },
         clicks: otherClicks.toString(),
-        percentage: countryTotalClicks > 0n ? Number((otherClicks * 10000n) / countryTotalClicks) / 100 : 0
+        percentage: countryTotalClicks > BigInt(0) ? Number((otherClicks * BigInt(10000)) / countryTotalClicks) / 100 : 0
       })
     }
 
@@ -57,12 +57,12 @@ export async function GET() {
     if (ageError) throw ageError
 
     // 年代別の総クリック数を計算
-    const ageTotalClicks = ageData.reduce((sum, a) => sum + BigInt(a.clicks), 0n)
+    const ageTotalClicks = ageData.reduce((sum, a) => sum + BigInt(a.clicks), BigInt(0))
 
     const ageGroups = ageData.map(a => ({
       group: a.age_group,
       clicks: a.clicks.toString(),
-      percentage: ageTotalClicks > 0n ? Number((BigInt(a.clicks) * 10000n) / ageTotalClicks) / 100 : 0
+      percentage: ageTotalClicks > BigInt(0) ? Number((BigInt(a.clicks) * BigInt(10000)) / ageTotalClicks) / 100 : 0
     }))
 
     const stats: GlobalStats = {
