@@ -9,40 +9,36 @@ interface HeartButtonProps {
   locale: string
 }
 
-// 36言語の「ありがとう」をハートボタンの両サイドに配置
+// 196個の「ありがとう」をハートボタンの両サイドに配置
+// スマホ版はハートの近くに配置
 function generateThankYouPositions() {
   const positions: Array<{ text: string; x: number; y: number; delay: number }> = []
-  const messages = thankYouTexts.slice(0, 36) // 36言語のみ使用
+  const messages = thankYouTexts.slice(0, 196) // 196個使用
   
-  // ハートボタンの左右に配置
-  const leftSide: Array<{ x: number; y: number }> = []
-  const rightSide: Array<{ x: number; y: number }> = []
-  
-  // 左側（x: -200 ~ -350, y: -100 ~ 200）
-  for (let i = 0; i < 18; i++) {
-    leftSide.push({
-      x: -200 - Math.random() * 150,
-      y: -100 + Math.random() * 300,
-    })
+  // デスクトップ版（x: -350 ~ 350, y: -100 ~ 200）
+  // スマホ版（x: -180 ~ 180, y: -80 ~ 120）
+  const desktop = {
+    leftX: { min: -350, max: -200 },
+    rightX: { min: 200, max: 350 },
+    y: { min: -100, max: 200 }
   }
   
-  // 右側（x: 200 ~ 350, y: -100 ~ 200）
-  for (let i = 0; i < 18; i++) {
-    rightSide.push({
-      x: 200 + Math.random() * 150,
-      y: -100 + Math.random() * 300,
-    })
+  const mobile = {
+    leftX: { min: -180, max: -120 },
+    rightX: { min: 120, max: 180 },
+    y: { min: -80, max: 120 }
   }
   
-  // 配置を混ぜる
-  const allPositions = [...leftSide, ...rightSide]
-  
-  // メッセージとランダム遅延を追加
+  // 左側98個、右側98個
   messages.forEach((text, i) => {
+    const isLeft = i < 98
+    const xRange = isLeft ? desktop.leftX : desktop.rightX
+    const mobileXRange = isLeft ? mobile.leftX : mobile.rightX
+    
     positions.push({
       text,
-      x: allPositions[i].x,
-      y: allPositions[i].y,
+      x: xRange.min + Math.random() * (xRange.max - xRange.min),
+      y: desktop.y.min + Math.random() * (desktop.y.max - desktop.y.min),
       delay: 5000 + Math.random() * 10000, // 5~15秒
     })
   })
@@ -58,9 +54,20 @@ export function HeartButton({ onClick, locale }: HeartButtonProps) {
   const [bubbleStates, setBubbleStates] = useState<Array<{ isPink: boolean; isShaking: boolean }>>(
     thankYouPositions.map(() => ({ isPink: false, isShaking: false }))
   )
+  const [isMobile, setIsMobile] = useState(false)
   const audioContextRef = useRef<AudioContext | null>(null)
 
-  // Web Audio APIでシンプルなクリックSE生成
+  useEffect(() => {
+    // モバイル判定
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  // Web Audio APIで綺麗なクリックSE生成（ピアノ風和音）
   const playClickSound = () => {
     if (typeof window === 'undefined') return
     
@@ -69,21 +76,30 @@ export function HeartButton({ onClick, locale }: HeartButtonProps) {
     }
     
     const ctx = audioContextRef.current
-    const oscillator = ctx.createOscillator()
-    const gainNode = ctx.createGain()
+    const now = ctx.currentTime
     
-    oscillator.connect(gainNode)
-    gainNode.connect(ctx.destination)
+    // C major和音（ド・ミ・ソ）
+    const frequencies = [523.25, 659.25, 783.99] // C5, E5, G5
     
-    // 短くて柔らかい音（周波数800Hz、0.05秒）
-    oscillator.frequency.value = 800
-    oscillator.type = 'sine'
-    
-    gainNode.gain.setValueAtTime(0.1, ctx.currentTime)
-    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05)
-    
-    oscillator.start(ctx.currentTime)
-    oscillator.stop(ctx.currentTime + 0.05)
+    frequencies.forEach((freq, i) => {
+      const oscillator = ctx.createOscillator()
+      const gainNode = ctx.createGain()
+      
+      oscillator.connect(gainNode)
+      gainNode.connect(ctx.destination)
+      
+      oscillator.frequency.value = freq
+      oscillator.type = 'sine'
+      
+      // ピアノ風エンベロープ（ADSR）
+      gainNode.gain.setValueAtTime(0, now)
+      gainNode.gain.linearRampToValueAtTime(0.08, now + 0.01) // Attack
+      gainNode.gain.exponentialRampToValueAtTime(0.05, now + 0.05) // Decay
+      gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3) // Sustain + Release
+      
+      oscillator.start(now)
+      oscillator.stop(now + 0.3)
+    })
   }
 
   const handleClick = async () => {
@@ -136,25 +152,31 @@ export function HeartButton({ onClick, locale }: HeartButtonProps) {
   return (
     <div className="relative">
       {/* 「ありがとう」吹き出し */}
-      {thankYouPositions.map((pos, i) => (
-        <div
-          key={i}
-          className={`
-            px-2 py-1 rounded-full shadow-sm text-xs font-medium whitespace-nowrap
-            transition-all duration-500
-            ${bubbleStates[i].isPink ? 'bg-pink-300/90 text-white' : 'bg-white/80 text-gray-600'}
-            ${bubbleStates[i].isShaking ? 'animate-shake' : ''}
-          `}
-          style={{
-            position: 'absolute',
-            left: '50%',
-            top: '50%',
-            transform: `translate(calc(-50% + ${pos.x}px), calc(-50% + ${pos.y}px))`,
-          }}
-        >
-          {pos.text}
-        </div>
-      ))}
+      {thankYouPositions.map((pos, i) => {
+        // スマホ版は範囲を狭める
+        const x = isMobile ? pos.x * 0.5 : pos.x
+        const y = isMobile ? pos.y * 0.6 : pos.y
+        
+        return (
+          <div
+            key={i}
+            className={`
+              px-2 py-1 rounded-full shadow-sm text-xs font-medium whitespace-nowrap
+              transition-all duration-500
+              ${bubbleStates[i].isPink ? 'bg-pink-300/90 text-white' : 'bg-white/80 text-gray-600'}
+              ${bubbleStates[i].isShaking ? 'animate-shake' : ''}
+            `}
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: '50%',
+              transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
+            }}
+          >
+            {pos.text}
+          </div>
+        )
+      })}
 
       {/* ハートボタン */}
       <button

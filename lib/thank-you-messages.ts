@@ -1,4 +1,4 @@
-// 195か国の「ありがとう」メッセージ（各国の主要言語）
+// 196か国の「ありがとう」メッセージ（各国の主要言語）
 export const thankYouTexts = [
   'Thank you', 'Merci', 'Gracias', 'Danke', 'ありがとう', '谢谢', '감사합니다',
   'Obrigado', 'Спасибо', 'شكرا', 'Grazie', 'धन्यवाद', 'Terima kasih',
@@ -45,4 +45,5 @@ export const thankYouTexts = [
   'Від щирого серця дякую', 'Szívemből köszönöm', 'Ze srdce díky',
   'Kwa moyo wote asante', 'Fra hjertet takk', 'Fra hjertet tak',
   'No sirds dziļumiem paldies', 'Iš širdies ačiū', 'Südamest suur tänu',
-].slice(0, 195) // 195個に制限
+  'Shukran', // 196個目（アラビア語別バリエーション）
+]
