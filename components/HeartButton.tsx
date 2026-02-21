@@ -8,44 +8,31 @@ interface HeartButtonProps {
   locale: string
 }
 
+// 36個の「ありがとう」を円周上に均等配置
 const thankYouMessages = [
-  { text: 'Thank you', lang: 'en', pos: { top: '5%', left: '-25%' } },
-  { text: 'ありがとう', lang: 'ja', pos: { top: '15%', right: '-30%' } },
-  { text: '谢谢', lang: 'zh', pos: { top: '25%', left: '-35%' } },
-  { text: '감사합니다', lang: 'ko', pos: { top: '35%', right: '-40%' } },
-  { text: 'Merci', lang: 'fr', pos: { top: '45%', left: '-30%' } },
-  { text: 'Gracias', lang: 'es', pos: { top: '55%', right: '-35%' } },
-  { text: 'Danke', lang: 'de', pos: { top: '65%', left: '-25%' } },
-  { text: 'Obrigado', lang: 'pt', pos: { top: '75%', right: '-40%' } },
-  { text: 'Спасибо', lang: 'ru', pos: { bottom: '25%', left: '-35%' } },
-  { text: 'شكرا', lang: 'ar', pos: { bottom: '15%', right: '-30%' } },
-  { text: 'Grazie', lang: 'it', pos: { bottom: '5%', left: '-25%' } },
-  { text: 'Tack', lang: 'sv', pos: { bottom: '35%', right: '-25%' } },
-  { text: 'Kiitos', lang: 'fi', pos: { top: '10%', left: '-45%' } },
-  { text: 'Dziękuję', lang: 'pl', pos: { top: '20%', right: '-45%' } },
-  { text: 'Dank je', lang: 'nl', pos: { top: '30%', left: '-40%' } },
-  { text: 'Ευχαριστώ', lang: 'el', pos: { top: '40%', right: '-48%' } },
-  { text: 'Diolch', lang: 'cy', pos: { top: '50%', left: '-35%' } },
-  { text: 'Hvala', lang: 'hr', pos: { top: '60%', right: '-30%' } },
-  { text: 'Děkuji', lang: 'cs', pos: { top: '70%', left: '-30%' } },
-  { text: 'Köszönöm', lang: 'hu', pos: { bottom: '30%', right: '-40%' } },
-  { text: 'Mulțumesc', lang: 'ro', pos: { bottom: '20%', left: '-40%' } },
-  { text: 'Terima kasih', lang: 'id', pos: { bottom: '10%', right: '-45%' } },
-  { text: 'Salamat', lang: 'tl', pos: { bottom: '40%', left: '-30%' } },
-  { text: 'धन्यवाद', lang: 'hi', pos: { top: '8%', right: '-25%' } },
-  { text: 'ধন্যবাদ', lang: 'bn', pos: { top: '18%', left: '-38%' } },
-  { text: 'நன்றி', lang: 'ta', pos: { top: '28%', right: '-28%' } },
-  { text: 'ขอบคุณ', lang: 'th', pos: { top: '38%', left: '-28%' } },
-  { text: 'Cảm ơn', lang: 'vi', pos: { top: '48%', right: '-38%' } },
-  { text: 'Terima kasih', lang: 'ms', pos: { top: '58%', left: '-42%' } },
-  { text: 'Asante', lang: 'sw', pos: { top: '68%', right: '-32%' } },
-  { text: 'Takk', lang: 'no', pos: { bottom: '28%', left: '-28%' } },
-  { text: 'Tak', lang: 'da', pos: { bottom: '18%', right: '-22%' } },
-  { text: 'Aitäh', lang: 'et', pos: { bottom: '38%', right: '-28%' } },
-  { text: 'Paldies', lang: 'lv', pos: { bottom: '8%', left: '-32%' } },
-  { text: 'Ačiū', lang: 'lt', pos: { bottom: '48%', right: '-25%' } },
-  { text: 'Grazas', lang: 'eu', pos: { bottom: '12%', left: '-38%' } },
-]
+  'Thank you', 'ありがとう', '谢谢', '감사합니다', 'Merci', 'Gracias',
+  'Danke', 'Obrigado', 'Спасибо', 'شكرا', 'Grazie', 'Tack',
+  'Kiitos', 'Dziękuję', 'Dank je', 'Ευχαριστώ', 'Diolch', 'Hvala',
+  'Děkuji', 'Köszönöm', 'Mulțumesc', 'Terima kasih', 'Salamat', 'धन्यवाद',
+  'ধন্যবাদ', 'நன்றி', 'ขอบคุณ', 'Cảm ơn', 'Asante', 'Takk',
+  'Tak', 'Aitäh', 'Paldies', 'Ačiū', 'Grazas', 'Mahalo'
+].map((text, i) => {
+  const angle = (i * 360) / 36  // 10度ずつ
+  const radius = 200  // ボタンから200px離す
+  const rad = (angle - 90) * (Math.PI / 180)  // -90は12時方向から開始
+  const x = Math.cos(rad) * radius
+  const y = Math.sin(rad) * radius
+  
+  return {
+    text,
+    style: {
+      position: 'absolute' as const,
+      left: '50%',
+      top: '50%',
+      transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
+    }
+  }
+})
 
 export function HeartButton({ onClick, locale }: HeartButtonProps) {
   const [isGlowing, setIsGlowing] = useState(false)
@@ -62,8 +49,8 @@ export function HeartButton({ onClick, locale }: HeartButtonProps) {
       {thankYouMessages.map((msg, i) => (
         <div
           key={i}
-          className="absolute bg-white/90 px-3 py-2 rounded-full shadow-lg text-sm font-medium text-gray-700 whitespace-nowrap"
-          style={msg.pos}
+          className="bg-white/90 px-3 py-2 rounded-full shadow-lg text-sm font-medium text-gray-700 whitespace-nowrap"
+          style={msg.style}
         >
           {msg.text}
         </div>
