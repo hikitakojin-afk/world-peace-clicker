@@ -1,62 +1,80 @@
 'use client'
 
 import { Heart } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import { thankYouTexts } from '@/lib/thank-you-messages'
 
 interface HeartButtonProps {
   onClick: () => Promise<void>
   locale: string
 }
 
-// 36個の「ありがとう」を不規則に配置（固定パターン）
-const thankYouData = [
-  { text: 'Thank you', x: -280, y: -120 },
-  { text: 'ありがとう', x: 260, y: -140 },
-  { text: '谢谢', x: -320, y: 80 },
-  { text: '감사합니다', x: 280, y: 100 },
-  { text: 'Merci', x: -200, y: -200 },
-  { text: 'Gracias', x: 220, y: -210 },
-  { text: 'Danke', x: -340, y: -30 },
-  { text: 'Obrigado', x: 320, y: -50 },
-  { text: 'Спасибо', x: -180, y: 180 },
-  { text: 'شكرا', x: 200, y: 190 },
-  { text: 'Grazie', x: -260, y: 150 },
-  { text: 'Tack', x: 240, y: 160 },
-  { text: 'Kiitos', x: 0, y: -240 },
-  { text: 'Dziękuję', x: 0, y: 220 },
-  { text: 'Dank je', x: -300, y: -80 },
-  { text: 'Ευχαριστώ', x: 300, y: 30 },
-  { text: 'Diolch', x: -220, y: -160 },
-  { text: 'Hvala', x: 210, y: -170 },
-  { text: 'Děkuji', x: -360, y: 40 },
-  { text: 'Köszönöm', x: 340, y: 60 },
-  { text: 'Mulțumesc', x: -140, y: 210 },
-  { text: 'Terima kasih', x: 160, y: 220 },
-  { text: 'Salamat', x: -240, y: 120 },
-  { text: 'धन्यवाद', x: 250, y: 130 },
-  { text: 'ধন্যবাদ', x: -290, y: -120 },
-  { text: 'நன்றி', x: 270, y: -110 },
-  { text: 'ขอบคุณ', x: -160, y: -220 },
-  { text: 'Cảm ơn', x: 180, y: -230 },
-  { text: 'Asante', x: -340, y: 100 },
-  { text: 'Takk', x: 330, y: -90 },
-  { text: 'Tak', x: -200, y: 160 },
-  { text: 'Aitäh', x: 220, y: 180 },
-  { text: 'Paldies', x: -110, y: -240 },
-  { text: 'Ačiū', x: 120, y: 240 },
-  { text: 'Grazas', x: -380, y: -10 },
-  { text: 'Mahalo', x: 360, y: 10 },
-]
-
-const thankYouMessages = thankYouData.map(({ text, x, y }) => ({
-  text,
-  style: {
-    position: 'absolute' as const,
-    left: '50%',
-    top: '50%',
-    transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
+// 195個の「ありがとう」を赤枠範囲内に不規則配置（固定パターン）
+function generateThankYouPositions() {
+  const positions: Array<{ text: string; x: number; y: number }> = []
+  const gridCols = 15  // 横15個
+  const gridRows = 13  // 縦13個 = 195個
+  const xRange = { min: -500, max: 500 }  // 横範囲
+  const yRange = { min: -250, max: 250 }  // 縦範囲
+  const heartRadius = 150  // ハートボタンを避ける半径
+  
+  const xStep = (xRange.max - xRange.min) / (gridCols + 1)
+  const yStep = (yRange.max - yRange.min) / (gridRows + 1)
+  
+  let textIndex = 0
+  
+  for (let row = 0; row < gridRows; row++) {
+    for (let col = 0; col < gridCols; col++) {
+      if (textIndex >= thankYouTexts.length) break
+      
+      // グリッド位置を計算
+      const baseX = xRange.min + (col + 1) * xStep
+      const baseY = yRange.min + (row + 1) * yStep
+      
+      // ランダムオフセット（±15px）
+      const offsetX = (Math.random() - 0.5) * 30
+      const offsetY = (Math.random() - 0.5) * 30
+      
+      const x = baseX + offsetX
+      const y = baseY + offsetY
+      
+      // ハートボタンと重ならないかチェック
+      const distance = Math.sqrt(x * x + y * y)
+      if (distance < heartRadius) {
+        // ハートボタンと重なる場合は外側に押し出す
+        const angle = Math.atan2(y, x)
+        const newX = Math.cos(angle) * (heartRadius + 20)
+        const newY = Math.sin(angle) * (heartRadius + 20)
+        positions.push({ text: thankYouTexts[textIndex], x: newX, y: newY })
+      } else {
+        positions.push({ text: thankYouTexts[textIndex], x, y })
+      }
+      
+      textIndex++
+    }
   }
-}))
+  
+  return positions
+}
+
+// コンポーネント外で一度だけ生成（固定パターン）
+const thankYouPositions = generateThankYouPositions()
+
+export function HeartButton({ onClick, locale }: HeartButtonProps) {
+  const [isGlowing, setIsGlowing] = useState(false)
+  
+  const thankYouMessages = useMemo(() => 
+    thankYouPositions.map(({ text, x, y }) => ({
+      text,
+      style: {
+        position: 'absolute' as const,
+        left: '50%',
+        top: '50%',
+        transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
+      }
+    })),
+    []
+  )
 
 export function HeartButton({ onClick, locale }: HeartButtonProps) {
   const [isGlowing, setIsGlowing] = useState(false)
@@ -73,7 +91,7 @@ export function HeartButton({ onClick, locale }: HeartButtonProps) {
       {thankYouMessages.map((msg, i) => (
         <div
           key={i}
-          className="bg-white/90 px-3 py-2 rounded-full shadow-lg text-sm font-medium text-gray-700 whitespace-nowrap"
+          className="bg-white/85 px-2 py-1 rounded-full shadow-md text-xs font-medium text-gray-600 whitespace-nowrap"
           style={msg.style}
         >
           {msg.text}
