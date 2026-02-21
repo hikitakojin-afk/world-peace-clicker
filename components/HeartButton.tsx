@@ -1,7 +1,7 @@
 'use client'
 
 import { Heart } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { thankYouTexts } from '@/lib/thank-you-messages'
 
 interface HeartButtonProps {
@@ -9,51 +9,43 @@ interface HeartButtonProps {
   locale: string
 }
 
-// 195個の「ありがとう」を赤枠範囲内に不規則配置（固定パターン）
+// 36言語の「ありがとう」をハートボタンの両サイドに配置
 function generateThankYouPositions() {
-  const positions: Array<{ text: string; x: number; y: number }> = []
-  const gridCols = 13  // 横13個
-  const gridRows = 15  // 縦15個 = 195個
-  const xRange = { min: -450, max: 450 }  // 横範囲（スマホ対応で狭める）
-  const yRange = { min: 80, max: 350 }  // 縦範囲（上部の総クリック数・進捗エリアを避ける）
-  const heartRadius = 150  // ハートボタンを避ける半径
-  const minDistance = 60  // 吹き出し同士の最小距離
+  const positions: Array<{ text: string; x: number; y: number; delay: number }> = []
+  const messages = thankYouTexts.slice(0, 36) // 36言語のみ使用
   
-  const xStep = (xRange.max - xRange.min) / (gridCols + 1)
-  const yStep = (yRange.max - yRange.min) / (gridRows + 1)
+  // ハートボタンの左右に配置
+  const leftSide: Array<{ x: number; y: number }> = []
+  const rightSide: Array<{ x: number; y: number }> = []
   
-  let textIndex = 0
-  
-  for (let row = 0; row < gridRows; row++) {
-    for (let col = 0; col < gridCols; col++) {
-      if (textIndex >= thankYouTexts.length) break
-      
-      // グリッド位置を計算
-      const baseX = xRange.min + (col + 1) * xStep
-      const baseY = yRange.min + (row + 1) * yStep
-      
-      // ランダムオフセット（±10px）小さくして重なりを防ぐ
-      const offsetX = (Math.random() - 0.5) * 20
-      const offsetY = (Math.random() - 0.5) * 20
-      
-      const x = baseX + offsetX
-      const y = baseY + offsetY
-      
-      // ハートボタンと重ならないかチェック
-      const distance = Math.sqrt(x * x + y * y)
-      if (distance < heartRadius) {
-        // ハートボタンと重なる場合は外側に押し出す
-        const angle = Math.atan2(y, x)
-        const newX = Math.cos(angle) * (heartRadius + 20)
-        const newY = Math.sin(angle) * (heartRadius + 20)
-        positions.push({ text: thankYouTexts[textIndex], x: newX, y: newY })
-      } else {
-        positions.push({ text: thankYouTexts[textIndex], x, y })
-      }
-      
-      textIndex++
-    }
+  // 左側（x: -200 ~ -350, y: -100 ~ 200）
+  for (let i = 0; i < 18; i++) {
+    leftSide.push({
+      x: -200 - Math.random() * 150,
+      y: -100 + Math.random() * 300,
+    })
   }
+  
+  // 右側（x: 200 ~ 350, y: -100 ~ 200）
+  for (let i = 0; i < 18; i++) {
+    rightSide.push({
+      x: 200 + Math.random() * 150,
+      y: -100 + Math.random() * 300,
+    })
+  }
+  
+  // 配置を混ぜる
+  const allPositions = [...leftSide, ...rightSide]
+  
+  // メッセージとランダム遅延を追加
+  messages.forEach((text, i) => {
+    positions.push({
+      text,
+      x: allPositions[i].x,
+      y: allPositions[i].y,
+      delay: 5000 + Math.random() * 10000, // 5~15秒
+    })
+  })
   
   return positions
 }
@@ -63,12 +55,83 @@ const thankYouPositions = generateThankYouPositions()
 
 export function HeartButton({ onClick, locale }: HeartButtonProps) {
   const [isGlowing, setIsGlowing] = useState(false)
+  const [bubbleStates, setBubbleStates] = useState<Array<{ isPink: boolean; isShaking: boolean }>>(
+    thankYouPositions.map(() => ({ isPink: false, isShaking: false }))
+  )
+  const audioContextRef = useRef<AudioContext | null>(null)
+
+  // Web Audio APIでシンプルなクリックSE生成
+  const playClickSound = () => {
+    if (typeof window === 'undefined') return
+    
+    if (!audioContextRef.current) {
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)()
+    }
+    
+    const ctx = audioContextRef.current
+    const oscillator = ctx.createOscillator()
+    const gainNode = ctx.createGain()
+    
+    oscillator.connect(gainNode)
+    gainNode.connect(ctx.destination)
+    
+    // 短くて柔らかい音（周波数800Hz、0.05秒）
+    oscillator.frequency.value = 800
+    oscillator.type = 'sine'
+    
+    gainNode.gain.setValueAtTime(0.1, ctx.currentTime)
+    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05)
+    
+    oscillator.start(ctx.currentTime)
+    oscillator.stop(ctx.currentTime + 0.05)
+  }
 
   const handleClick = async () => {
     setIsGlowing(true)
+    playClickSound()
     await onClick()
-    setTimeout(() => setIsGlowing(false), 300)
+    setTimeout(() => setIsGlowing(false), 150) // 一瞬のエフェクト
   }
+
+  // フキダシのランダムピンクフェード＋シェイク
+  useEffect(() => {
+    const timers: NodeJS.Timeout[] = []
+    
+    bubbleStates.forEach((_, index) => {
+      const scheduleAnimation = () => {
+        const delay = thankYouPositions[index].delay
+        
+        const timer = setTimeout(() => {
+          // ピンクフェード＋シェイク開始
+          setBubbleStates(prev => {
+            const newStates = [...prev]
+            newStates[index] = { isPink: true, isShaking: true }
+            return newStates
+          })
+          
+          // 1秒後に元に戻す
+          setTimeout(() => {
+            setBubbleStates(prev => {
+              const newStates = [...prev]
+              newStates[index] = { isPink: false, isShaking: false }
+              return newStates
+            })
+            
+            // 次のアニメーションをスケジュール
+            scheduleAnimation()
+          }, 1000)
+        }, delay)
+        
+        timers.push(timer)
+      }
+      
+      scheduleAnimation()
+    })
+    
+    return () => {
+      timers.forEach(timer => clearTimeout(timer))
+    }
+  }, [])
 
   return (
     <div className="relative">
@@ -76,7 +139,12 @@ export function HeartButton({ onClick, locale }: HeartButtonProps) {
       {thankYouPositions.map((pos, i) => (
         <div
           key={i}
-          className="bg-white/80 px-1.5 py-0.5 rounded-full shadow-sm text-[10px] font-medium text-gray-600 whitespace-nowrap"
+          className={`
+            px-2 py-1 rounded-full shadow-sm text-xs font-medium whitespace-nowrap
+            transition-all duration-500
+            ${bubbleStates[i].isPink ? 'bg-pink-300/90 text-white' : 'bg-white/80 text-gray-600'}
+            ${bubbleStates[i].isShaking ? 'animate-shake' : ''}
+          `}
           style={{
             position: 'absolute',
             left: '50%',

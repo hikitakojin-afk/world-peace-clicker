@@ -5,9 +5,10 @@ interface CountDisplayProps {
   threshold: string
   label: string
   isCleared: boolean
+  progressLabel: string
 }
 
-export function CountDisplay({ count, threshold, label, isCleared }: CountDisplayProps) {
+export function CountDisplay({ count, threshold, label, isCleared, progressLabel }: CountDisplayProps) {
   // BigIntを3桁区切りにフォーマット
   const formatCount = (num: string) => {
     return num.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
@@ -32,7 +33,7 @@ export function CountDisplay({ count, threshold, label, isCleared }: CountDispla
         </div>
       </div>
       <div className="mt-2 text-sm md:text-base text-gray-600">
-        進捗: {progress.toString()}%
+        {progressLabel}: {progress.toString()}%
       </div>
     </div>
   )

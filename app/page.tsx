@@ -151,6 +151,7 @@ export default function Home() {
             threshold={stats.clearThreshold}
             label={t.totalClicks}
             isCleared={stats.isCleared}
+            progressLabel={t.progress}
           />
         )}
 
