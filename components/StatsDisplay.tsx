@@ -1,8 +1,10 @@
 'use client'
 
+import { useState } from 'react'
 import { CountryStat, AgeGroupStat } from '@/types'
 import { Locale } from '@/lib/i18n'
 import { getCountryName } from '@/lib/country-names'
+import { translations } from '@/lib/i18n'
 
 interface StatsDisplayProps {
   countries: CountryStat[]
@@ -23,9 +25,14 @@ function getFlagEmoji(countryCode: string): string {
 }
 
 export function StatsDisplay({ countries, ageGroups, countryLabel, ageLabel, locale }: StatsDisplayProps) {
+  const [showAllCountries, setShowAllCountries] = useState(false)
+  
   const formatCount = (num: string) => {
     return num.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }
+
+  const t = translations[locale]
+  const displayedCountries = showAllCountries ? countries : countries.slice(0, 8)
 
   return (
     <div className="grid md:grid-cols-2 gap-8 mt-12 max-w-6xl mx-auto">
@@ -33,7 +40,7 @@ export function StatsDisplay({ countries, ageGroups, countryLabel, ageLabel, loc
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl">
         <h3 className="text-2xl font-bold text-pink-600 mb-4">{countryLabel}</h3>
         <div className="space-y-2 max-h-96 overflow-y-auto">
-          {countries.map((country, index) => {
+          {displayedCountries.map((country, index) => {
             // 正式国名をローカライズして取得
             const countryName = country.code === 'OTHER' 
               ? (country.name[locale] || country.name.en)
@@ -54,6 +61,16 @@ export function StatsDisplay({ countries, ageGroups, countryLabel, ageLabel, loc
             )
           })}
         </div>
+        
+        {/* Show more / Show less ボタン */}
+        {countries.length > 8 && (
+          <button
+            onClick={() => setShowAllCountries(!showAllCountries)}
+            className="mt-4 w-full py-2 px-4 bg-pink-500 hover:bg-pink-600 text-white rounded-lg transition-colors duration-200 font-medium"
+          >
+            {showAllCountries ? t.showLess : t.showMore}
+          </button>
+        )}
       </div>
 
       {/* 年代別統計 */}

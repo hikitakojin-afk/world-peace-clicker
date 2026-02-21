@@ -5,6 +5,7 @@ import { HeartButton } from '@/components/HeartButton'
 import { CountDisplay } from '@/components/CountDisplay'
 import { StatsDisplay } from '@/components/StatsDisplay'
 import { UserInputModal } from '@/components/UserInputModal'
+import { Footer } from '@/components/Footer'
 import { supabase } from '@/lib/supabase-client'
 import { UserProfile, GlobalStats, ClickResponse } from '@/types'
 import { translations, getLocaleFromCountry, Locale } from '@/lib/i18n'
@@ -173,6 +174,9 @@ export default function Home() {
             locale={locale}
           />
         )}
+
+        {/* Footer */}
+        <Footer locale={locale} />
       </div>
     </main>
   )

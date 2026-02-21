@@ -36,6 +36,9 @@ export const translations: Record<Locale, Record<string, any>> = {
     clearMessage: 'あなたの愛は世界中に届きました。この世界が幸せになりますように',
     countryStats: '国別統計',
     ageStats: '年代別統計',
+    showMore: 'もっと見る',
+    showLess: '閉じる',
+    createdBy: '制作者',
     inputModal: {
       title: 'はじめに',
       description: '国籍と年齢を入力してください',
@@ -53,6 +56,9 @@ export const translations: Record<Locale, Record<string, any>> = {
     clearMessage: 'Your love has reached the world. May this world be filled with happiness',
     countryStats: 'Country Statistics',
     ageStats: 'Age Group Statistics',
+    showMore: 'Show more',
+    showLess: 'Show less',
+    createdBy: 'Created by',
     inputModal: {
       title: 'Welcome',
       description: 'Please enter your country and age',
@@ -70,6 +76,9 @@ export const translations: Record<Locale, Record<string, any>> = {
     clearMessage: '你的爱已传遍世界。愿这个世界充满幸福',
     countryStats: '国家统计',
     ageStats: '年龄组统计',
+    showMore: '显示更多',
+    showLess: '收起',
+    createdBy: '创作者',
     inputModal: {
       title: '欢迎',
       description: '请输入您的国家和年龄',
@@ -87,6 +96,9 @@ export const translations: Record<Locale, Record<string, any>> = {
     clearMessage: '당신의 사랑이 전 세계에 전달되었습니다. 이 세상이 행복으로 가득하기를',
     countryStats: '국가별 통계',
     ageStats: '연령대별 통계',
+    showMore: '더 보기',
+    showLess: '닫기',
+    createdBy: '제작자',
     inputModal: {
       title: '환영합니다',
       description: '국가와 나이를 입력해주세요',
@@ -104,6 +116,9 @@ export const translations: Record<Locale, Record<string, any>> = {
     clearMessage: 'Tu amor ha llegado al mundo. Que este mundo esté lleno de felicidad',
     countryStats: 'Estadísticas por País',
     ageStats: 'Estadísticas por Edad',
+    showMore: 'Mostrar más',
+    showLess: 'Mostrar menos',
+    createdBy: 'Creado por',
     inputModal: {
       title: 'Bienvenido',
       description: 'Por favor ingresa tu país y edad',
@@ -121,6 +136,9 @@ export const translations: Record<Locale, Record<string, any>> = {
     clearMessage: 'Votre amour a atteint le monde. Que ce monde soit rempli de bonheur',
     countryStats: 'Statistiques par Pays',
     ageStats: 'Statistiques par Âge',
+    showMore: 'Afficher plus',
+    showLess: 'Afficher moins',
+    createdBy: 'Créé par',
     inputModal: {
       title: 'Bienvenue',
       description: 'Veuillez entrer votre pays et votre âge',
@@ -138,6 +156,9 @@ export const translations: Record<Locale, Record<string, any>> = {
     clearMessage: 'Deine Liebe hat die Welt erreicht. Möge diese Welt voller Glück sein',
     countryStats: 'Länderstatistiken',
     ageStats: 'Altersgruppen-Statistiken',
+    showMore: 'Mehr anzeigen',
+    showLess: 'Weniger anzeigen',
+    createdBy: 'Erstellt von',
     inputModal: {
       title: 'Willkommen',
       description: 'Bitte gib dein Land und Alter ein',
@@ -155,6 +176,9 @@ export const translations: Record<Locale, Record<string, any>> = {
     clearMessage: 'Seu amor alcançou o mundo. Que este mundo seja cheio de felicidade',
     countryStats: 'Estatísticas por País',
     ageStats: 'Estatísticas por Idade',
+    showMore: 'Mostrar mais',
+    showLess: 'Mostrar menos',
+    createdBy: 'Criado por',
     inputModal: {
       title: 'Bem-vindo',
       description: 'Por favor insira seu país e idade',
@@ -172,6 +196,9 @@ export const translations: Record<Locale, Record<string, any>> = {
     clearMessage: 'Твоя любовь достигла мира. Пусть этот мир будет полон счастья',
     countryStats: 'Статистика по Странам',
     ageStats: 'Статистика по Возрасту',
+    showMore: 'Показать больше',
+    showLess: 'Показать меньше',
+    createdBy: 'Создано',
     inputModal: {
       title: 'Добро пожаловать',
       description: 'Пожалуйста, введите вашу страну и возраст',
@@ -189,6 +216,9 @@ export const translations: Record<Locale, Record<string, any>> = {
     clearMessage: 'وصل حبك إلى العالم. ليكن هذا العالم مليئاً بالسعادة',
     countryStats: 'إحصائيات البلد',
     ageStats: 'إحصائيات الفئة العمرية',
+    showMore: 'عرض المزيد',
+    showLess: 'عرض أقل',
+    createdBy: 'تم الإنشاء بواسطة',
     inputModal: {
       title: 'مرحباً',
       description: 'الرجاء إدخال بلدك وعمرك',
