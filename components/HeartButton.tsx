@@ -14,8 +14,8 @@ function generateThankYouPositions() {
   const positions: Array<{ text: string; x: number; y: number }> = []
   const gridCols = 15  // 横15個
   const gridRows = 13  // 縦13個 = 195個
-  const xRange = { min: -500, max: 500 }  // 横範囲
-  const yRange = { min: -250, max: 250 }  // 縦範囲
+  const xRange = { min: -550, max: 550 }  // 横範囲
+  const yRange = { min: -50, max: 280 }  // 縦範囲（上部の総クリック数エリアを避ける）
   const heartRadius = 150  // ハートボタンを避ける半径
   
   const xStep = (xRange.max - xRange.min) / (gridCols + 1)
