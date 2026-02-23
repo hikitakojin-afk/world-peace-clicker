@@ -20,6 +20,11 @@ export interface AgeGroupStat {
   percentage: number
 }
 
+export interface DailyStat {
+  date: string
+  clicks: string
+}
+
 export interface GlobalStats {
   totalClicks: string
   clearThreshold: string
@@ -27,6 +32,7 @@ export interface GlobalStats {
   clearedAt: string | null
   countries: CountryStat[]
   ageGroups: AgeGroupStat[]
+  dailyStats: DailyStat[]
 }
 
 export interface ClickResponse {

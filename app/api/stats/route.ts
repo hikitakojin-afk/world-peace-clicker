@@ -24,10 +24,10 @@ export async function GET() {
     if (countryError) throw countryError
 
     const totalClicks = BigInt(globalData.total_clicks)
-    
+
     // 統計から総クリック数を計算
     const countryTotalClicks = allCountryData.reduce((sum, c) => sum + BigInt(c.clicks), BigInt(0))
-    
+
     const topCountries = allCountryData.slice(0, TOP_COUNTRIES_COUNT)
     const otherCountries = allCountryData.slice(TOP_COUNTRIES_COUNT)
 
@@ -65,13 +65,30 @@ export async function GET() {
       percentage: ageTotalClicks > BigInt(0) ? Number((BigInt(a.clicks) * BigInt(10000)) / ageTotalClicks) / 100 : 0
     }))
 
+    // 日別統計 (過去7日分)
+    const sevenDaysAgo = new Date()
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+    const { data: dailyData, error: dailyError } = await supabase
+      .from('daily_stats')
+      .select('*')
+      .gte('date', sevenDaysAgo.toISOString().split('T')[0])
+      .order('date', { ascending: true })
+
+    if (dailyError) throw dailyError
+
+    const dailyStats = dailyData ? dailyData.map(d => ({
+      date: d.date,
+      clicks: d.clicks.toString()
+    })) : []
+
     const stats: GlobalStats = {
       totalClicks: globalData.total_clicks.toString(),
       clearThreshold: globalData.clear_threshold.toString(),
       isCleared: globalData.is_cleared,
       clearedAt: globalData.cleared_at,
       countries,
-      ageGroups
+      ageGroups,
+      dailyStats
     }
 
     return NextResponse.json({

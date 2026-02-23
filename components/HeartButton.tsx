@@ -15,7 +15,7 @@ interface HeartButtonProps {
 function generateThankYouPositions() {
   const positions: Array<{ text: string; x: number; y: number; delay: number }> = []
   const messages = thankYouTexts.slice(0, 196) // 196個使用
-  
+
   // デスクトップ版（x: -350 ~ 350, y: -100 ~ 200）
   // スマホ版（x: -180 ~ 180, y: -80 ~ 120）
   const desktop = {
@@ -23,19 +23,19 @@ function generateThankYouPositions() {
     rightX: { min: 200, max: 350 },
     y: { min: -100, max: 200 }
   }
-  
+
   const mobile = {
     leftX: { min: -180, max: -120 },
     rightX: { min: 120, max: 180 },
     y: { min: -80, max: 120 }
   }
-  
+
   // 左側98個、右側98個
   messages.forEach((text, i) => {
     const isLeft = i < 98
     const xRange = isLeft ? desktop.leftX : desktop.rightX
     const mobileXRange = isLeft ? mobile.leftX : mobile.rightX
-    
+
     positions.push({
       text,
       x: xRange.min + Math.random() * (xRange.max - xRange.min),
@@ -43,7 +43,7 @@ function generateThankYouPositions() {
       delay: 5000 + Math.random() * 10000, // 5~15秒
     })
   })
-  
+
   return positions
 }
 
@@ -71,33 +71,33 @@ export function HeartButton({ onClick, locale, disabled = false }: HeartButtonPr
   // Web Audio APIで綺麗なクリックSE生成（ピアノ風和音）
   const playClickSound = () => {
     if (typeof window === 'undefined') return
-    
+
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)()
     }
-    
+
     const ctx = audioContextRef.current
     const now = ctx.currentTime
-    
+
     // C major和音（ド・ミ・ソ）
     const frequencies = [523.25, 659.25, 783.99] // C5, E5, G5
-    
+
     frequencies.forEach((freq, i) => {
       const oscillator = ctx.createOscillator()
       const gainNode = ctx.createGain()
-      
+
       oscillator.connect(gainNode)
       gainNode.connect(ctx.destination)
-      
+
       oscillator.frequency.value = freq
       oscillator.type = 'sine'
-      
+
       // ピアノ風エンベロープ（ADSR）
       gainNode.gain.setValueAtTime(0, now)
       gainNode.gain.linearRampToValueAtTime(0.08, now + 0.01) // Attack
       gainNode.gain.exponentialRampToValueAtTime(0.05, now + 0.05) // Decay
       gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3) // Sustain + Release
-      
+
       oscillator.start(now)
       oscillator.stop(now + 0.3)
     })
@@ -114,11 +114,11 @@ export function HeartButton({ onClick, locale, disabled = false }: HeartButtonPr
   // フキダシのランダムピンクフェード＋シェイク
   useEffect(() => {
     const timers: NodeJS.Timeout[] = []
-    
+
     bubbleStates.forEach((_, index) => {
       const scheduleAnimation = () => {
         const delay = thankYouPositions[index].delay
-        
+
         const timer = setTimeout(() => {
           // ピンクフェード＋シェイク開始
           setBubbleStates(prev => {
@@ -126,7 +126,7 @@ export function HeartButton({ onClick, locale, disabled = false }: HeartButtonPr
             newStates[index] = { isPink: true, isShaking: true }
             return newStates
           })
-          
+
           // 1秒後に元に戻す
           setTimeout(() => {
             setBubbleStates(prev => {
@@ -134,18 +134,18 @@ export function HeartButton({ onClick, locale, disabled = false }: HeartButtonPr
               newStates[index] = { isPink: false, isShaking: false }
               return newStates
             })
-            
+
             // 次のアニメーションをスケジュール
             scheduleAnimation()
           }, 1000)
         }, delay)
-        
+
         timers.push(timer)
       }
-      
+
       scheduleAnimation()
     })
-    
+
     return () => {
       timers.forEach(timer => clearTimeout(timer))
     }
@@ -158,7 +158,7 @@ export function HeartButton({ onClick, locale, disabled = false }: HeartButtonPr
         // スマホ版は範囲を狭める
         const x = isMobile ? pos.x * 0.5 : pos.x
         const y = isMobile ? pos.y * 0.6 : pos.y
-        
+
         return (
           <div
             key={i}
@@ -185,19 +185,19 @@ export function HeartButton({ onClick, locale, disabled = false }: HeartButtonPr
         onClick={handleClick}
         disabled={disabled}
         className={`
-          relative w-48 h-48 md:w-64 md:h-64 
+          relative w-48 h-48 md:w-64 md:h-64 z-10
           rounded-full 
           shadow-2xl
           transition-all duration-200
-          ${disabled 
-            ? 'bg-gray-400 cursor-not-allowed opacity-50' 
+          ${disabled
+            ? 'bg-gray-400 cursor-not-allowed opacity-50'
             : 'bg-gradient-to-br from-pink-400 via-red-400 to-pink-500 hover:from-pink-500 hover:via-red-500 hover:to-pink-600 hover:shadow-pink-500/50 active:scale-95'
           }
           ${isGlowing && !disabled ? 'shadow-pink-400/80 shadow-[0_0_40px_10px_rgba(251,113,133,0.6)]' : ''}
         `}
       >
-        <Heart 
-          className="absolute inset-0 m-auto text-white drop-shadow-lg" 
+        <Heart
+          className="absolute inset-0 m-auto text-white drop-shadow-lg"
           size={120}
           fill="currentColor"
         />

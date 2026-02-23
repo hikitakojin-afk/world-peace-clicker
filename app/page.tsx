@@ -22,7 +22,7 @@ export default function Home() {
 
   useEffect(() => {
     setMounted(true)
-    
+
     // ローカルストレージからプロフィール読み込み
     const savedProfile = localStorage.getItem('userProfile')
     if (savedProfile) {
@@ -110,10 +110,10 @@ export default function Home() {
         localStorage.setItem('hasClicked', 'true')
         setHasClicked(true)
         setShowThankYou(true)
-        
+
         // 5秒後に感謝メッセージを非表示
         setTimeout(() => setShowThankYou(false), 5000)
-        
+
         // ローカルで即座に更新（楽観的UI）
         if (stats) {
           setStats({
@@ -164,7 +164,7 @@ export default function Home() {
 
         {/* カウンター */}
         {stats && (
-          <CountDisplay 
+          <CountDisplay
             count={stats.totalClicks}
             threshold={stats.clearThreshold}
             label={t.totalClicks}
@@ -189,8 +189,8 @@ export default function Home() {
 
         {/* ハートボタン */}
         <div className="flex justify-center mb-12">
-          <HeartButton 
-            onClick={handleClick} 
+          <HeartButton
+            onClick={handleClick}
             locale={locale}
             disabled={hasClicked || (stats?.isCleared ?? false)}
           />
@@ -206,9 +206,9 @@ export default function Home() {
               ageLabel={t.ageStats}
               locale={locale}
             />
-            
+
             {/* クリック数推移チャート */}
-            <ClickChart locale={locale} currentTotal={stats.totalClicks} />
+            <ClickChart locale={locale} dailyStats={stats.dailyStats} />
           </>
         )}
 

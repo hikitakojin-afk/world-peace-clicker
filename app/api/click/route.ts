@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     const newCount = BigInt(currentData.total_clicks) + BigInt(1)
     const { data: globalData, error: globalError } = await supabaseAdmin
       .from('global_count')
-      .update({ 
+      .update({
         total_clicks: newCount.toString(),
         updated_at: new Date().toISOString()
       })
@@ -62,6 +62,12 @@ export async function POST(request: NextRequest) {
       p_age_group: ageGroup
     })
 
+    // 日別カウント更新
+    const today = new Date().toISOString().split('T')[0]
+    await supabaseAdmin.rpc('increment_daily_clicks', {
+      p_date: today
+    })
+
     // クリア判定
     let isCleared = globalData.is_cleared
     let clearedAt = globalData.cleared_at
@@ -72,7 +78,7 @@ export async function POST(request: NextRequest) {
         .from('global_count')
         .update({ is_cleared: true, cleared_at: now })
         .eq('id', 1)
-      
+
       isCleared = true
       clearedAt = now
     }
