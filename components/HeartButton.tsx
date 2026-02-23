@@ -164,7 +164,7 @@ export function HeartButton({ onClick, locale, disabled = false }: HeartButtonPr
             key={i}
             className={`
               px-2 py-1 rounded-full shadow-sm text-xs font-medium whitespace-nowrap
-              transition-all duration-500
+              transition-all duration-500 z-0
               ${bubbleStates[i].isPink ? 'bg-pink-300/90 text-white' : 'bg-white/80 text-gray-600'}
               ${bubbleStates[i].isShaking ? 'animate-shake' : ''}
             `}
@@ -185,7 +185,7 @@ export function HeartButton({ onClick, locale, disabled = false }: HeartButtonPr
         onClick={handleClick}
         disabled={disabled}
         className={`
-          relative w-48 h-48 md:w-64 md:h-64 z-10
+          relative w-48 h-48 md:w-64 md:h-64 z-50
           rounded-full 
           shadow-2xl
           transition-all duration-200

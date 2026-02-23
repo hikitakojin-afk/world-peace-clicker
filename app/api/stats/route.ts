@@ -74,7 +74,9 @@ export async function GET() {
       .gte('date', sevenDaysAgo.toISOString().split('T')[0])
       .order('date', { ascending: true })
 
-    if (dailyError) throw dailyError
+    if (dailyError) {
+      console.warn('daily_stats table query failed (maybe not created yet):', dailyError)
+    }
 
     const dailyStats = dailyData ? dailyData.map(d => ({
       date: d.date,
