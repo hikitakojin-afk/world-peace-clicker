@@ -16,18 +16,18 @@ function generateThankYouPositions() {
   const positions: Array<{ text: string; x: number; y: number; delay: number }> = []
   const messages = thankYouTexts.slice(0, 196) // 196個使用
 
-  // デスクトップ版（x: -350 ~ 350, y: -100 ~ 200）
-  // スマホ版（x: -180 ~ 180, y: -80 ~ 120）
+  // デスクトップ版
   const desktop = {
-    leftX: { min: -350, max: -200 },
-    rightX: { min: 200, max: 350 },
-    y: { min: -100, max: 200 }
+    leftX: { min: -450, max: -240 },
+    rightX: { min: 240, max: 450 },
+    y: { min: -180, max: 250 }
   }
 
+  // スマホ版
   const mobile = {
-    leftX: { min: -180, max: -120 },
-    rightX: { min: 120, max: 180 },
-    y: { min: -80, max: 120 }
+    leftX: { min: -220, max: -140 },
+    rightX: { min: 140, max: 220 },
+    y: { min: -100, max: 150 }
   }
 
   // 左側98個、右側98個

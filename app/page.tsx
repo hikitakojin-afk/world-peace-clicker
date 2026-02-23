@@ -175,15 +175,37 @@ export default function Home() {
 
         {/* 感謝メッセージ */}
         {showThankYou && (
-          <div className="bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-white text-center py-6 px-4 rounded-2xl mb-8 shadow-2xl animate-pulse">
+          <div className="bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-white text-center py-6 px-4 rounded-2xl mb-8 shadow-2xl animate-pulse flex flex-col items-center gap-4">
             <p className="text-2xl md:text-3xl font-bold">{t.thankYouMessage}</p>
+            {stats && (
+              <a
+                href={`https://x.com/intent/tweet?text=${encodeURIComponent(t.shareText(stats.totalClicks))}&url=${encodeURIComponent('https://world-peace-clicker2.vercel.app/')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-black text-white px-6 py-2 rounded-full font-bold flex items-center gap-2 hover:bg-gray-800 transition-colors shadow-lg"
+              >
+                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+                {t.shareButton}
+              </a>
+            )}
           </div>
         )}
 
         {/* クリック済みメッセージ */}
         {hasClicked && !showThankYou && (
-          <div className="bg-blue-100 text-blue-800 text-center py-4 px-4 rounded-xl mb-8">
+          <div className="bg-blue-100 text-blue-800 text-center py-6 px-4 rounded-xl mb-8 flex flex-col items-center gap-4">
             <p className="text-lg md:text-xl font-medium">{t.alreadyClicked}</p>
+            {stats && (
+              <a
+                href={`https://x.com/intent/tweet?text=${encodeURIComponent(t.shareText(stats.totalClicks))}&url=${encodeURIComponent('https://world-peace-clicker2.vercel.app/')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-black text-white px-6 py-2 rounded-full font-bold flex items-center gap-2 hover:bg-gray-800 transition-colors shadow-lg"
+              >
+                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+                {t.shareButton}
+              </a>
+            )}
           </div>
         )}
 

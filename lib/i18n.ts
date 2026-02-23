@@ -49,6 +49,8 @@ export const translations: Record<Locale, Record<string, any>> = {
       age: '年齢',
       submit: '開始',
     },
+    shareText: (clicks: string) => `私は世界平和のために ${clicks} 番目のクリックをしました！🌍💖\nみんなで協力して世界平和を実現しよう！\n`,
+    shareButton: 'Xで証明をポストする',
   },
   en: {
     title: 'World Peace Clicker',
@@ -72,6 +74,8 @@ export const translations: Record<Locale, Record<string, any>> = {
       age: 'Age',
       submit: 'Start',
     },
+    shareText: (clicks: string) => `I made the ${clicks}th click for world peace! 🌍💖\nLet's achieve world peace together!\n`,
+    shareButton: 'Post proof on X',
   },
   zh: {
     title: '世界和平点击器',
@@ -95,6 +99,8 @@ export const translations: Record<Locale, Record<string, any>> = {
       age: '年龄',
       submit: '开始',
     },
+    shareText: (clicks: string) => `我为了世界和平点击了第 ${clicks} 次！🌍💖\n让我们一起实现世界和平！\n`,
+    shareButton: '在X上发布证明',
   },
   ko: {
     title: '세계 평화 클리커',
@@ -118,6 +124,8 @@ export const translations: Record<Locale, Record<string, any>> = {
       age: '나이',
       submit: '시작',
     },
+    shareText: (clicks: string) => `나는 세계 평화를 위해 ${clicks}번째 클릭을 했습니다! 🌍💖\n함께 세계 평화를 이루어요!\n`,
+    shareButton: 'X에 증명 게시하기',
   },
   es: {
     title: 'Clicker de Paz Mundial',
@@ -141,6 +149,8 @@ export const translations: Record<Locale, Record<string, any>> = {
       age: 'Edad',
       submit: 'Comenzar',
     },
+    shareText: (clicks: string) => `¡Hice el clic número ${clicks} por la paz mundial! 🌍💖\n¡Logremos la paz mundial juntos!\n`,
+    shareButton: 'Publicar prueba en X',
   },
   fr: {
     title: 'Clicker de Paix Mondiale',
@@ -164,6 +174,8 @@ export const translations: Record<Locale, Record<string, any>> = {
       age: 'Âge',
       submit: 'Commencer',
     },
+    shareText: (clicks: string) => `J'ai fait le ${clicks}ème clic pour la paix mondiale ! 🌍💖\nRéalisons ensemble la paix mondiale !\n`,
+    shareButton: 'Publier la preuve sur X',
   },
   de: {
     title: 'Weltfrieden-Klicker',
@@ -187,6 +199,8 @@ export const translations: Record<Locale, Record<string, any>> = {
       age: 'Alter',
       submit: 'Starten',
     },
+    shareText: (clicks: string) => `Ich habe den ${clicks}. Klick für den Weltfrieden gemacht! 🌍💖\nLasst uns gemeinsam Weltfrieden erreichen!\n`,
+    shareButton: 'Beweis auf X posten',
   },
   pt: {
     title: 'Clicker de Paz Mundial',
@@ -210,6 +224,8 @@ export const translations: Record<Locale, Record<string, any>> = {
       age: 'Idade',
       submit: 'Começar',
     },
+    shareText: (clicks: string) => `Eu dei o ${clicks}º clique pela paz mundial! 🌍💖\nVamos alcançar a paz mundial juntos!\n`,
+    shareButton: 'Postar prova no X',
   },
   ru: {
     title: 'Кликер Мира Во Всем Мире',
@@ -233,6 +249,8 @@ export const translations: Record<Locale, Record<string, any>> = {
       age: 'Возраст',
       submit: 'Начать',
     },
+    shareText: (clicks: string) => `Я сделал ${clicks}-й клик ради мира во всем мире! 🌍💖\nДавайте вместе достигнем мира во всем мире!\n`,
+    shareButton: 'Опубликовать доказательство в X',
   },
   ar: {
     title: 'نقر السلام العالمي',
@@ -256,5 +274,7 @@ export const translations: Record<Locale, Record<string, any>> = {
       age: 'العمر',
       submit: 'ابدأ',
     },
+    shareText: (clicks: string) => `لقد قمت بالنقر للمرة ${clicks} من أجل السلام العالمي! 🌍💖\nدعونا نحقق السلام العالمي معاً!\n`,
+    shareButton: 'انشر الدليل على X',
   },
 }
