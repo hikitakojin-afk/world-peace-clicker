@@ -16,31 +16,21 @@ function generateThankYouPositions() {
   const positions: Array<{ text: string; x: number; y: number; delay: number }> = []
   const messages = thankYouTexts.slice(0, 196) // 196個使用
 
-  // デスクトップ版
-  const desktop = {
-    leftX: { min: -450, max: -240 },
-    rightX: { min: 240, max: 450 },
-    y: { min: -180, max: 250 }
-  }
-
-  // スマホ版
-  const mobile = {
-    leftX: { min: -220, max: -140 },
-    rightX: { min: 140, max: 220 },
-    y: { min: -100, max: 150 }
-  }
-
-  // 左側98個、右側98個
   messages.forEach((text, i) => {
-    const isLeft = i < 98
-    const xRange = isLeft ? desktop.leftX : desktop.rightX
-    const mobileXRange = isLeft ? mobile.leftX : mobile.rightX
+    // 左右に均等に振り分ける
+    const isLeft = i % 2 === 0
+    // ハートが中央（半径約130px）にあるため、最低でも180pxは離す
+    const baseX = 180 + Math.random() * 250
+    // 縦方向も適度にばらけさせる
+    const baseY = (Math.random() - 0.5) * 500
 
     positions.push({
       text,
-      x: xRange.min + Math.random() * (xRange.max - xRange.min),
-      y: desktop.y.min + Math.random() * (desktop.y.max - desktop.y.min),
-      delay: 5000 + Math.random() * 10000, // 5~15秒
+      // 左側ならマイナス、右側ならプラス
+      x: isLeft ? -baseX : baseX,
+      y: baseY,
+      // 発生タイミングをバラバラに (0〜15秒)
+      delay: Math.random() * 15000,
     })
   })
 
@@ -155,9 +145,13 @@ export function HeartButton({ onClick, locale, disabled = false }: HeartButtonPr
     <div className="relative">
       {/* 「ありがとう」吹き出し */}
       {thankYouPositions.map((pos, i) => {
-        // スマホ版は範囲を狭める
-        const x = isMobile ? pos.x * 0.5 : pos.x
-        const y = isMobile ? pos.y * 0.6 : pos.y
+        // スマホ版のX座標: 最低 110px は離す
+        let finalX = pos.x;
+        let finalY = pos.y;
+        if (isMobile) {
+          finalX = pos.x > 0 ? Math.max(120, pos.x * 0.6) : Math.min(-120, pos.x * 0.6);
+          finalY = pos.y * 0.6;
+        }
 
         return (
           <div
@@ -172,7 +166,7 @@ export function HeartButton({ onClick, locale, disabled = false }: HeartButtonPr
               position: 'absolute',
               left: '50%',
               top: '50%',
-              transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
+              transform: `translate(calc(-50% + ${finalX}px), calc(-50% + ${finalY}px))`,
             }}
           >
             {pos.text}
@@ -190,7 +184,7 @@ export function HeartButton({ onClick, locale, disabled = false }: HeartButtonPr
           shadow-2xl
           transition-all duration-200
           ${disabled
-            ? 'bg-gray-400 cursor-not-allowed opacity-50'
+            ? 'bg-gray-400 cursor-not-allowed'
             : 'bg-gradient-to-br from-pink-400 via-red-400 to-pink-500 hover:from-pink-500 hover:via-red-500 hover:to-pink-600 hover:shadow-pink-500/50 active:scale-95'
           }
           ${isGlowing && !disabled ? 'shadow-pink-400/80 shadow-[0_0_40px_10px_rgba(251,113,133,0.6)]' : ''}

@@ -157,7 +157,7 @@ export default function Home() {
 
         {/* クリア メッセージ */}
         {stats?.isCleared && (
-          <div className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-white text-center py-6 px-4 rounded-2xl mb-8 shadow-2xl animate-pulse">
+          <div className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-white text-center py-6 px-4 rounded-2xl mb-8 shadow-2xl animate-pulse relative z-50">
             <p className="text-2xl md:text-3xl font-bold">{t.clearMessage}</p>
           </div>
         )}
@@ -175,7 +175,7 @@ export default function Home() {
 
         {/* 感謝メッセージ */}
         {showThankYou && (
-          <div className="bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-white text-center py-6 px-4 rounded-2xl mb-8 shadow-2xl animate-pulse flex flex-col items-center gap-4">
+          <div className="bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-white text-center py-6 px-4 rounded-2xl mb-8 shadow-2xl animate-pulse flex flex-col items-center gap-4 relative z-50">
             <p className="text-2xl md:text-3xl font-bold">{t.thankYouMessage}</p>
             {stats && (
               <a
@@ -193,7 +193,7 @@ export default function Home() {
 
         {/* クリック済みメッセージ */}
         {hasClicked && !showThankYou && (
-          <div className="bg-blue-100 text-blue-800 text-center py-6 px-4 rounded-xl mb-8 flex flex-col items-center gap-4">
+          <div className="bg-blue-100 text-blue-800 text-center py-6 px-4 rounded-xl mb-8 flex flex-col items-center gap-4 relative z-50">
             <p className="text-lg md:text-xl font-medium">{t.alreadyClicked}</p>
             {stats && (
               <a
