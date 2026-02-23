@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   title: 'World Peace Clicker',
   description: "Let's achieve world peace together by clicking",
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
+  other: {
+    'google-adsense-account': 'ca-pub-3086915253078071',
+  },
 }
 
 export default function RootLayout({
