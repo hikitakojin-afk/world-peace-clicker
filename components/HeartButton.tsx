@@ -158,7 +158,7 @@ export function HeartButton({ onClick, locale, disabled = false }: HeartButtonPr
             key={i}
             className={`
               px-2 py-1 rounded-full shadow-sm text-xs font-medium whitespace-nowrap
-              transition-all duration-500 z-0
+              transition-all duration-500 z-[-10] pointer-events-none
               ${bubbleStates[i].isPink ? 'bg-pink-300/90 text-white' : 'bg-white/80 text-gray-600'}
               ${bubbleStates[i].isShaking ? 'animate-shake' : ''}
             `}

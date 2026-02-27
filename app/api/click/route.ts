@@ -18,17 +18,21 @@ export async function POST(request: NextRequest) {
       } as ClickResponse, { status: 400 })
     }
 
-    // 現在のカウント取得
-    const { data: currentData } = await supabaseAdmin
-      .from('global_count')
-      .select('total_clicks, clear_threshold, is_cleared, cleared_at')
-      .eq('id', 1)
-      .single()
+    // トランザクションとして全てのカウントを記録する単一のRPCを呼び出す
+    const today = new Date().toISOString().split('T')[0]
+    const { data: txData, error: txError } = await supabaseAdmin.rpc('record_click', {
+      p_country_code: countryCode,
+      p_age_group: ageGroup,
+      p_date: today
+    })
 
-    if (!currentData) throw new Error('Failed to fetch global count')
+    if (txError) throw txError
+    if (!txData || txData.length === 0) throw new Error('Failed to update counts atomically')
 
-    // 目標達成判定（達成済みの場合はクリックを受け付けない）
-    if (BigInt(currentData.total_clicks) >= BigInt(currentData.clear_threshold)) {
+    const clickResult = txData[0] // Record_click は TABLE を返すため、最初の行を取得
+
+    // RPC内で目標達成済みと判定された場合
+    if (!clickResult.success) {
       return NextResponse.json({
         success: false,
         error: {
@@ -38,50 +42,7 @@ export async function POST(request: NextRequest) {
       } as ClickResponse, { status: 403 })
     }
 
-    // カウント更新
-    const newCount = BigInt(currentData.total_clicks) + BigInt(1)
-    const { data: globalData, error: globalError } = await supabaseAdmin
-      .from('global_count')
-      .update({
-        total_clicks: newCount.toString(),
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', 1)
-      .select('total_clicks, clear_threshold, is_cleared, cleared_at')
-      .single()
-
-    if (globalError) throw globalError
-
-    // 国籍別カウント更新
-    await supabaseAdmin.rpc('increment_country', {
-      p_country_code: countryCode
-    })
-
-    // 年代別カウント更新
-    await supabaseAdmin.rpc('increment_age_group', {
-      p_age_group: ageGroup
-    })
-
-    // 日別カウント更新
-    const today = new Date().toISOString().split('T')[0]
-    await supabaseAdmin.rpc('increment_daily_clicks', {
-      p_date: today
-    })
-
-    // クリア判定
-    let isCleared = globalData.is_cleared
-    let clearedAt = globalData.cleared_at
-
-    if (!isCleared && BigInt(globalData.total_clicks) >= BigInt(globalData.clear_threshold)) {
-      const now = new Date().toISOString()
-      await supabaseAdmin
-        .from('global_count')
-        .update({ is_cleared: true, cleared_at: now })
-        .eq('id', 1)
-
-      isCleared = true
-      clearedAt = now
-    }
+    const { total_clicks: updatedTotal, is_cleared: isCleared, cleared_at: clearedAt } = clickResult
 
     // 統計取得（ランキング）
     const { data: countryStats } = await supabaseAdmin
@@ -100,7 +61,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: {
-        totalClicks: globalData.total_clicks.toString(),
+        totalClicks: updatedTotal.toString(),
         isCleared,
         clearedAt,
         countryRank: countryRank + 1,
